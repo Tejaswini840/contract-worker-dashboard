@@ -4,9 +4,15 @@ import json
 import os
 from datetime import datetime
 
+# ══════════════════════════════════════════════════════════════
+#  CONFIGURATION — Update SRC when you get a new Excel file
+# ══════════════════════════════════════════════════════════════
 SRC  = r"c:\Users\I758345\Downloads\C user dashboard as on 15th Nov (2).xlsx"
-DST  = r"c:\Users\I758345\Documents\GitHub\contract-worker-dashboard\C user dashboard cleaned.xlsx"
+# ══════════════════════════════════════════════════════════════
+
+DST      = r"c:\Users\I758345\Documents\GitHub\contract-worker-dashboard\C user dashboard cleaned.xlsx"
 JSON_OUT = r"c:\Users\I758345\Documents\GitHub\contract-worker-dashboard\dashboard_data.json"
+
 
 shutil.copy2(SRC, DST)
 wb = openpyxl.load_workbook(DST)
