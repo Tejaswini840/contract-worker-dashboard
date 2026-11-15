@@ -96,6 +96,37 @@ footer a{color:var(--bl);text-decoration:none}footer a:hover{text-decoration:und
 @media(max-width:768px){.g2,.g3,.g22{grid-template-columns:1fr}.kr,.sa,.ts{padding-left:14px;padding-right:14px}.fb,.hdi{padding-left:14px;padding-right:14px}}
 </style>
 
+
+#chat-btn{position:fixed;bottom:28px;right:28px;width:58px;height:58px;border-radius:50%;background:linear-gradient(135deg,#2563eb,#0891b2);color:#fff;font-size:1.5rem;border:none;cursor:pointer;box-shadow:0 4px 20px rgba(37,99,235,.45);z-index:9999;transition:all .25s;display:flex;align-items:center;justify-content:center}
+#chat-btn:hover{transform:scale(1.1);box-shadow:0 6px 28px rgba(37,99,235,.55)}
+#chat-pulse{position:absolute;width:100%;height:100%;border-radius:50%;border:3px solid #3b82f6;animation:cpulse 2s infinite;opacity:.6}
+@keyframes cpulse{0%{transform:scale(1);opacity:.6}70%{transform:scale(1.4);opacity:0}100%{transform:scale(1.4);opacity:0}}
+#chat-panel{position:fixed;bottom:96px;right:28px;width:375px;max-height:555px;background:#fff;border-radius:18px;box-shadow:0 20px 60px rgba(0,0,0,.18);z-index:9998;display:none;flex-direction:column;overflow:hidden;border:1px solid #e2e8f0}
+#chat-panel.open{display:flex}
+.cp-hd{background:linear-gradient(135deg,#1e3a8a,#2563eb 60%,#0891b2);padding:15px 17px;display:flex;align-items:center;gap:11px;flex-shrink:0}
+.cp-av{width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0}
+.cp-title{flex:1}.cp-title strong{color:#fff;font-size:.88rem;font-weight:700;display:block}
+.cp-title span{color:rgba(255,255,255,.65);font-size:.7rem}
+.cp-close{color:rgba(255,255,255,.75);background:none;border:none;cursor:pointer;font-size:1.1rem;padding:4px 6px;border-radius:6px;transition:.2s}
+.cp-close:hover{background:rgba(255,255,255,.15);color:#fff}
+.cp-msgs{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:9px;min-height:0}
+.cp-msgs::-webkit-scrollbar{width:4px}.cp-msgs::-webkit-scrollbar-track{background:#f8fafc}.cp-msgs::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:4px}
+.msg{max-width:87%;padding:10px 13px;border-radius:14px;font-size:.81rem;line-height:1.55;animation:mfade .2s ease}
+@keyframes mfade{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+.msg-ai{background:#f1f5f9;color:#0f172a;align-self:flex-start;border-bottom-left-radius:4px}
+.msg-user{background:linear-gradient(135deg,#2563eb,#0891b2);color:#fff;align-self:flex-end;border-bottom-right-radius:4px}
+.msg-typing{background:#f1f5f9;align-self:flex-start;border-bottom-left-radius:4px;padding:12px 15px}
+.tdot{display:inline-block;width:7px;height:7px;border-radius:50%;background:#94a3b8;margin:0 2px;animation:tblink 1.2s infinite}
+.tdot:nth-child(2){animation-delay:.2s}.tdot:nth-child(3){animation-delay:.4s}
+@keyframes tblink{0%,80%,100%{opacity:.2}40%{opacity:1}}
+.cp-sugs{padding:0 12px 8px;display:flex;flex-wrap:wrap;gap:5px;flex-shrink:0}
+.cs{background:#f1f5f9;border:1.5px solid #e2e8f0;border-radius:20px;padding:4px 10px;font-size:.7rem;cursor:pointer;color:#475569;font-family:inherit;font-weight:500;transition:.2s}
+.cs:hover{background:#eff6ff;border-color:#2563eb;color:#2563eb}
+.cp-ft{padding:10px 12px;border-top:1px solid #f1f5f9;display:flex;gap:7px;flex-shrink:0;background:#fafafa}
+.cp-inp{flex:1;padding:9px 12px;border:1.5px solid #e2e8f0;border-radius:22px;font-size:.81rem;font-family:inherit;outline:none;background:#fff;transition:.2s}
+.cp-inp:focus{border-color:#2563eb;box-shadow:0 0 0 3px rgba(37,99,235,.1)}
+.cp-send{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#2563eb,#0891b2);color:#fff;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.2s;flex-shrink:0;font-size:.85rem}
+.cp-send:hover{transform:scale(1.08);box-shadow:0 3px 10px rgba(37,99,235,.35)}
 </style>
 </head>
 <body>
@@ -90475,6 +90506,98 @@ document.getElementById('hd-cnt').textContent='\uD83D\uDC65 '+D.length.toLocaleS
 renderAll();
 </script>
 <footer>Contract Worker Dashboard &middot; Data 15 Nov 2026 &middot; Tejaswini C &amp; Radhisha R &middot; <a href="https://github.com/Tejaswini840/contract-worker-dashboard" target="_blank">GitHub</a></footer>
+
+<button id="chat-btn" onclick="toggleChat()" title="Ask AI about your data">
+  <div id="chat-pulse"></div>
+  <span id="cb-ico">&#x1F916;</span>
+</button>
+<div id="chat-panel">
+  <div class="cp-hd">
+    <div class="cp-av">&#x1F4CA;</div>
+    <div class="cp-title"><strong>Dashboard AI</strong><span>Ask anything about your contract workers</span></div>
+    <button class="cp-close" onclick="toggleChat()">&#x2715;</button>
+  </div>
+  <div class="cp-msgs" id="cp-msgs"></div>
+  <div class="cp-sugs" id="cp-sugs"></div>
+  <div class="cp-ft">
+    <input class="cp-inp" id="cp-inp" placeholder="Ask about your data..." onkeydown="if(event.key==='Enter')sendMsg()"/>
+    <button class="cp-send" onclick="sendMsg()">&#x27A4;</button>
+  </div>
+</div>
+<script>
+var chatOpen=false;
+var SUGS=['How many workers in total?','How many Paragon workers?','T&M vs Fixed Price split?','Who manages more workers?','How many workers are approved?','Top supplier by headcount?','How many Hestia workers?','Show Radhisha R summary','Workers starting in 2026?'];
+function toggleChat(){chatOpen=!chatOpen;document.getElementById('chat-panel').classList.toggle('open',chatOpen);document.getElementById('cb-ico').textContent=chatOpen?'\u2715':'\uD83E\uDD16';if(chatOpen&&document.getElementById('cp-msgs').children.length===0){addMsg('ai','\uD83D\uDC4B Hi! I am your <strong>Dashboard AI</strong>. I can answer questions about your <strong>'+D.length.toLocaleString()+' contract workers</strong> across Tejaswini C and Radhisha R portfolios. Try asking anything!');renderSugs();}if(chatOpen)setTimeout(function(){document.getElementById('cp-inp').focus();},200);}
+function renderSugs(){var el=document.getElementById('cp-sugs');el.innerHTML=SUGS.slice(0,5).map(function(s){return'<button class="cs" onclick="askSug(this)">'+s+'</button>';}).join('');}
+function askSug(btn){var q=btn.textContent;document.getElementById('cp-sugs').innerHTML='';document.getElementById('cp-inp').value=q;sendMsg();}
+function addMsg(type,html){var body=document.getElementById('cp-msgs');var d=document.createElement('div');d.className='msg msg-'+type;d.innerHTML=html.replace(/\n/g,'<br/>');body.appendChild(d);body.scrollTop=body.scrollHeight;return d;}
+function showTyping(){var body=document.getElementById('cp-msgs');var d=document.createElement('div');d.className='msg msg-typing';d.id='tind';d.innerHTML='<span class="tdot"></span><span class="tdot"></span><span class="tdot"></span>';body.appendChild(d);body.scrollTop=body.scrollHeight;}
+function hideTyping(){var el=document.getElementById('tind');if(el)el.remove();}
+function sendMsg(){var inp=document.getElementById('cp-inp');var q=inp.value.trim();if(!q)return;inp.value='';addMsg('user',q);document.getElementById('cp-sugs').innerHTML='';showTyping();setTimeout(function(){hideTyping();addMsg('ai',answerQ(q));},650);}
+function answerQ(q){
+var ql=q.toLowerCase(),d=D;
+function cnt(key,val){return d.filter(function(r){return(r[key]||'').toLowerCase().indexOf(val)>=0;}).length;}
+function cntEx(key,val){return d.filter(function(r){return(r[key]||'')===val;}).length;}
+function pct(n,t){return t?' ('+Math.round(n/t*100)+'%)':'';}
+function top5(key,cl){var m={};d.forEach(function(r){var k=cl?csup(r[key]||''):(r[key]||'');if(!k)return;m[k]=(m[k]||0)+1;});return Object.entries(m).sort(function(a,b){return b[1]-a[1];}).slice(0,5);}
+var T=d.length,tej=cnt('owner','tejaswini'),rad=cnt('owner','radhisha');
+if(/total|how many|count|number.*worker/i.test(ql)){
+  if(/paragon/i.test(ql)){var n=cntEx('contract_name','Paragon');return '&#x1F4CB; <strong>'+n.toLocaleString()+' workers</strong>'+pct(n,T)+' on <strong>Paragon</strong>.';}
+  if(/hestia/i.test(ql)){var n=cntEx('contract_name','Hestia');return '&#x1F4CB; <strong>'+n.toLocaleString()+' workers</strong>'+pct(n,T)+' on <strong>Hestia</strong>.';}
+  if(/tejaswini/i.test(ql))return '&#x1F9D1; <strong>Tejaswini C</strong> manages <strong>'+tej.toLocaleString()+'</strong>'+pct(tej,T)+'.';
+  if(/radhisha/i.test(ql))return '&#x1F9D1; <strong>Radhisha R</strong> manages <strong>'+rad.toLocaleString()+'</strong>'+pct(rad,T)+'.';
+  return '&#x1F465; <strong>'+T.toLocaleString()+' total workers</strong>\n\n&#x1F7E3; Tejaswini C: <strong>'+tej.toLocaleString()+'</strong>'+pct(tej,T)+'\n&#x1F535; Radhisha R: <strong>'+rad.toLocaleString()+'</strong>'+pct(rad,T);
+}
+if(/who manages more|compare owner/i.test(ql)){
+  var w=tej>rad?'Tejaswini C':'Radhisha R',diff=Math.abs(tej-rad);
+  return '&#x1F3C6; <strong>'+w+'</strong> manages more.\n\n&#x1F7E3; Tejaswini C: <strong>'+tej.toLocaleString()+'</strong>'+pct(tej,T)+'\n&#x1F535; Radhisha R: <strong>'+rad.toLocaleString()+'</strong>'+pct(rad,T)+'\nDifference: <strong>'+diff.toLocaleString()+'</strong>';
+}
+if(/tejaswini.*(summary|detail)/i.test(ql)){
+  var td=d.filter(function(r){return r.owner==='Tejaswini C';});
+  return '&#x1F9D1; <strong>Tejaswini C</strong>\n&#x1F4CB; Total: <strong>'+td.length.toLocaleString()+'</strong>\n&#x1F7E6; Paragon: <strong>'+td.filter(function(r){return r.contract_name==='Paragon';}).length+'</strong>\n&#x1F7E2; Hestia: <strong>'+td.filter(function(r){return r.contract_name==='Hestia';}).length+'</strong>\n&#x2705; Approved: <strong>'+td.filter(function(r){return(r.sow_status||'').indexOf('Approved')>=0;}).length+'</strong>';
+}
+if(/radhisha.*(summary|detail)/i.test(ql)){
+  var rd=d.filter(function(r){return r.owner==='Radhisha R';});
+  return '&#x1F9D1; <strong>Radhisha R</strong>\n&#x1F4CB; Total: <strong>'+rd.length.toLocaleString()+'</strong>\n&#x1F7E6; Paragon: <strong>'+rd.filter(function(r){return r.contract_name==='Paragon';}).length+'</strong>\n&#x1F7E2; Hestia: <strong>'+rd.filter(function(r){return r.contract_name==='Hestia';}).length+'</strong>\n&#x2705; Approved: <strong>'+rd.filter(function(r){return(r.sow_status||'').indexOf('Approved')>=0;}).length+'</strong>';
+}
+if(/pricing|t.m|time.*material|fixed|managed/i.test(ql)){
+  var ms=cnt('pricing_type','managed'),tm=cnt('pricing_type','t&m'),fp=cnt('pricing_type','fixed');
+  return '&#x1F4B0; <strong>Pricing Breakdown</strong>\n\n&#x2699; Managed: <strong>'+ms.toLocaleString()+'</strong>'+pct(ms,T)+'\n&#x1F4CC; Fixed: <strong>'+fp.toLocaleString()+'</strong>'+pct(fp,T)+'\n&#x23F1; T&amp;M: <strong>'+tm.toLocaleString()+'</strong>'+pct(tm,T);
+}
+if(/contract|paragon|hestia/i.test(ql)){
+  var p=cntEx('contract_name','Paragon'),h=cntEx('contract_name','Hestia'),o=cntEx('contract_name','Non Hestia/Non Paragon');
+  return '&#x1F4C4; <strong>Contracts</strong>\n\n&#x1F7E6; Paragon: <strong>'+p.toLocaleString()+'</strong>'+pct(p,T)+'\n&#x1F7E2; Hestia: <strong>'+h.toLocaleString()+'</strong>'+pct(h,T)+'\n&#x26AA; Other: <strong>'+o.toLocaleString()+'</strong>'+pct(o,T);
+}
+if(/approv|status|pending/i.test(ql)){
+  var ap=cnt('sow_status','approved'),pa=cnt('sow_status','pending');
+  return '&#x2705; <strong>SOW Status</strong>\n\nApproved: <strong>'+ap.toLocaleString()+'</strong>'+pct(ap,T)+'\nPending: <strong>'+pa.toLocaleString()+'</strong>'+pct(pa,T);
+}if(/supplier|vendor|accenture|tcs|hcl|ntt|tech mahindra|infosys/i.test(ql)){
+  if(/accenture/i.test(ql))return '&#x1F3E2; <strong>Accenture</strong>: <strong>'+cnt('supplier','accenture').toLocaleString()+'</strong> workers'+pct(cnt('supplier','accenture'),T)+'.';
+  if(/hcl/i.test(ql))return '&#x1F3E2; <strong>HCL</strong>: <strong>'+cnt('supplier','hcl').toLocaleString()+'</strong> workers'+pct(cnt('supplier','hcl'),T)+'.';
+  if(/tcs|tata/i.test(ql))return '&#x1F3E2; <strong>TCS</strong>: <strong>'+cnt('supplier','tata').toLocaleString()+'</strong> workers'+pct(cnt('supplier','tata'),T)+'.';
+  if(/ntt/i.test(ql))return '&#x1F3E2; <strong>NTT DATA</strong>: <strong>'+cnt('supplier','ntt').toLocaleString()+'</strong> workers'+pct(cnt('supplier','ntt'),T)+'.';
+  if(/mahindra/i.test(ql))return '&#x1F3E2; <strong>Tech Mahindra</strong>: <strong>'+cnt('supplier','mahindra').toLocaleString()+'</strong> workers'+pct(cnt('supplier','mahindra'),T)+'.';
+  var t5=top5('supplier',true);
+  return '&#x1F3E2; <strong>Top 5 Suppliers</strong>\n\n'+t5.map(function(x,i){return ['&#x1F947;','&#x1F948;','&#x1F949;','&#x1F539;','&#x1F539;'][i]+' '+x[0]+': <strong>'+x[1].toLocaleString()+'</strong>';}).join('\n');
+}
+if(/location|bangalore|walldorf|beijing|seoul|area/i.test(ql)){
+  if(/bangalore/i.test(ql))return '&#x1F4CD; <strong>Bangalore</strong>: <strong>'+cnt('personnel_area','bangalore').toLocaleString()+'</strong> workers'+pct(cnt('personnel_area','bangalore'),T)+'.';
+  if(/walldorf/i.test(ql))return '&#x1F4CD; <strong>Walldorf</strong>: <strong>'+cnt('personnel_area','walldorf').toLocaleString()+'</strong> workers'+pct(cnt('personnel_area','walldorf'),T)+'.';
+  var t5=top5('personnel_area',false).map(function(x){return [x[0].replace(/^\d+_/,''),x[1]];});
+  return '&#x1F4CD; <strong>Top Locations</strong>\n\n'+t5.map(function(x,i){return ['&#x1F947;','&#x1F948;','&#x1F949;','&#x1F539;','&#x1F539;'][i]+' '+x[0]+': <strong>'+x[1].toLocaleString()+'</strong>';}).join('\n');
+}
+if(/2026|2027|start|onboard|month|trend/i.test(ql)){
+  if(/month/i.test(ql)){var mm={};d.forEach(function(r){if(r.worker_start){var mo=r.worker_start.substring(0,7);mm[mo]=(mm[mo]||0)+1;}});var top3=Object.entries(mm).sort(function(a,b){return b[1]-a[1];}).slice(0,3);return '&#x1F4C5; <strong>Busiest Months</strong>\n\n'+top3.map(function(x){return '&#x1F539; '+x[0]+': <strong>'+x[1]+'</strong> workers';}).join('\n');}
+  var yr=/2027/i.test(ql)?'2027':'2026',n=d.filter(function(r){return r.worker_start&&r.worker_start.startsWith(yr);}).length;
+  return '&#x1F4C5; <strong>'+n.toLocaleString()+' workers</strong> started in <strong>'+yr+'</strong>'+pct(n,T)+'.';
+}
+if(/thank|bye|great|awesome/i.test(ql))return '&#x1F60A; You are welcome! Feel free to ask more anytime.';
+if(/^(hi|hello|hey)/i.test(ql))return '&#x1F44B; Hello! Ask me about:\n\n&#x1F4CB; Contracts\n&#x1F4B0; Pricing types\n&#x1F465; Owners\n&#x1F3E2; Suppliers\n&#x1F4CD; Locations';
+var kws=q.match(/\b\w{4,}\b/g);
+if(kws){for(var i=0;i<kws.length;i++){var kw=kws[i].toLowerCase();if(kw.length<4)continue;var ms2=d.filter(function(r){return csup(r.supplier||'').toLowerCase().indexOf(kw)>=0;});if(ms2.length>0)return '&#x1F3E2; Found <strong>'+ms2.length.toLocaleString()+' workers</strong> matching &ldquo;'+kws[i]+'&rdquo;'+pct(ms2.length,T)+'.';}}
+return '&#x1F914; I can help with:\n\n&#x1F4CB; Contracts (Paragon, Hestia)\n&#x1F4B0; Pricing types\n&#x1F465; Owner comparison\n&#x2705; Approval status\n&#x1F3E2; Supplier headcount\n&#x1F4C5; Date trends';
+}
+</script>
 </body>
 </html>
 
